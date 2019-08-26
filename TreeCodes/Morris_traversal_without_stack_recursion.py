@@ -4,7 +4,7 @@ class Node:
         self.left = None
         self.right = None
 
-
+########################################################################################################################
 # Morris Traversal : Time Complexity : O(n) Space Complexity :O(1)
 def in_order_traversal_without_recursion_and_stack(root):
     if root is None:
@@ -26,7 +26,7 @@ def in_order_traversal_without_recursion_and_stack(root):
                 print(current.data, end=" ")
                 current = current.right
 
-
+########################################################################################################################
 def pre_order_traversal(root):
     if root is None:
         return
@@ -47,6 +47,7 @@ def pre_order_traversal(root):
                 pred.right = None
                 current = current.right
 
+########################################################################################################################
 
 if __name__ == '__main__':
     root = Node(1)

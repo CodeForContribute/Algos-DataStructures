@@ -17,7 +17,7 @@ def in_order(root):
     print(root.key, end=" ")
     in_order(root.right)
 
-
+#######################################################################################################################
 def insert_key_in_tree(root, key):
     queue = list()
     queue.append(root)
@@ -35,6 +35,7 @@ def insert_key_in_tree(root, key):
         else:
             queue.append(root.right)
 
+######################################################################################################################
 
 if __name__ == '__main__':
     root = Node(10)

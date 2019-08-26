@@ -32,7 +32,7 @@ def in_order_tree(root):
     print(root.data, end=" ")
     in_order_tree(root.right)
 
-
+#######################################################################################################################
 def mirror(root):
     if root is None:
         return
@@ -58,7 +58,7 @@ def is_foldable(root):
     result = is_structure_same(root.left, root.right)
     mirror(root.left)
     return result
-
+#######################################################################################################################
 
 """
 Time complexity: O(n)
@@ -82,7 +82,7 @@ IsFoldableUtil(n1, n2)
    a) n1->left is mirror of n2->right
    b) n1->right is mirror of n2->left
 filter_none"""
-
+#####################################################################################################################
 
 def is_foldable_mirror(root):
     if root is None:
@@ -96,7 +96,7 @@ def is_foldable_util(root1, root2):
     if root1 is None or root2 is None:
         return False
     return is_foldable_util(root1.left, root2.right) and is_foldable_util(root1.right, root2.left)
-
+#######################################################################################################################
 
 if __name__ == '__main__':
     root = Node(1)

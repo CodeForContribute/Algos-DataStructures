@@ -7,7 +7,7 @@ class Node:
         self.left = None
         self.right = None
 
-
+#######################################################################################################################
 def find_max(root):
     if root is None:
         return sys.maxsize
@@ -20,7 +20,7 @@ def find_max(root):
         result = rres
     return result
 
-
+#######################################################################################################################
 if __name__ == '__main__':
     root = Node(2)
     root.left = Node(7)

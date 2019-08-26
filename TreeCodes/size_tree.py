@@ -4,6 +4,7 @@ class Node:
         self.left = None
         self.right = None
 
+#######################################################################################################################
 
 def size_tree(root):
     if root is None:
@@ -11,6 +12,7 @@ def size_tree(root):
     else:
         return 1 + size_tree(root.left) + size_tree(root.right)
 
+########################################################################################################################
 
 if __name__ == '__main__':
     root = Node(1)

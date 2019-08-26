@@ -4,7 +4,7 @@ class Node:
         self.left = None
         self.right = None
 
-
+#######################################################################################################################
 def in_order_tree(root):
     if root is None:
         return
@@ -12,7 +12,7 @@ def in_order_tree(root):
     print(root.data, end=" ")
     in_order_tree(root.right)
 
-
+#######################################################################################################################
 def pre_order_tree(root):
     if root is None:
         return
@@ -20,14 +20,14 @@ def pre_order_tree(root):
     pre_order_tree(root.left)
     pre_order_tree(root.right)
 
-
+#######################################################################################################################
 def post_order_tree(root):
     if root is None:
         return
     post_order_tree(root.left)
     post_order_tree(root.right)
     print(root.data, end=" ")
-
+#######################################################################################################################
 
 if __name__ == '__main__':
     root = Node(1)

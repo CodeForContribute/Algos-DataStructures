@@ -19,7 +19,7 @@ def in_order_tree(root):
     print(root.data, end=" ")
     in_order_tree(root.right)
 
-
+#######################################################################################################################
 def not_greater(i, stack):
     precedence = {"+": 1, "-": 1, "*": 2, "/": 2, "^": 3}
     # return  True if a in precedence and b in precedence and a<= b else False
@@ -76,7 +76,7 @@ def construct_expression_tree(postfix_exp):
 #
 #     while len(output) != 0:
 #         return "".join(output)
-
+########################################################################################################################
 
 if __name__ == '__main__':
     infix_exp = "a + b - e * f * g"

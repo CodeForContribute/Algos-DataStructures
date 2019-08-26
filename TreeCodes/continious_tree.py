@@ -41,7 +41,7 @@ def in_order(root):
     print(root.data, end=" ")
     in_order(root.right)
 
-
+########################################################################################################################
 def is_continious_tree(root):
     if root is None:
         return True
@@ -54,7 +54,7 @@ def is_continious_tree(root):
     return abs(root.data - root.left.data) == 1 and abs(root.data - root.right.data) and is_continious_tree(root.left) \
            and is_continious_tree(root.right)
 
-
+########################################################################################################################
 if __name__ == '__main__':
     root = Node(3)
     # root.left = Node(2)

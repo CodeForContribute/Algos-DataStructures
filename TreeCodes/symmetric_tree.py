@@ -4,6 +4,7 @@ class Node:
         self.right = None
         self.left = None
 
+#######################################################################################################################
 
 def is_mirror_image(root1, root2):
     if root1 is None and root2 is None:
@@ -13,7 +14,7 @@ def is_mirror_image(root1, root2):
         if root1.data == root2.data:
             return is_mirror_image(root1.left, root2.right) and is_mirror_image(root1.right, root2.left)
     return False
-
+#######################################################################################################################
 
 if __name__ == '__main__':
     root = Node(1)

@@ -6,6 +6,7 @@ class Node:
 
 
 class BinaryTree:
+    #########################Technique 1################################################################################
     def height_tree(self, node):
         if node is None:
             return 0
@@ -31,6 +32,7 @@ class BinaryTree:
             self.print_given_level(root_value.left, level-1)
             self.print_given_level(root_value.right, level-1)
 
+####################################Iterative approach##################################################################
     @staticmethod
     def iterative_approach_level_order_traversal(root_value):
         if root_value is None:
@@ -45,7 +47,7 @@ class BinaryTree:
             if node.right is not None:
                 queue.append(node.right)
 
-
+#######################################################################################################################
 if __name__ == '__main__':
     tree = BinaryTree()
     root = Node(1)

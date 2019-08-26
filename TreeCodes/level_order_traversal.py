@@ -5,7 +5,7 @@ class Node:
         self.right = None
 
 
-############################# Time Complexity :O(n^2)
+############################# Time Complexity :O(n^2)###################################################################
 def print_level_order(root):
     h = height(root)
     # print(h)
@@ -35,9 +35,7 @@ def print_given_level(root, level):
         print_given_level(root.right, level - 1)
 
 
-# Using Queue
-
-
+####################################### Using Queue Time Complexity :O(max width of tree)###################################
 def print_level_order_queue(root):
     if root is None:
         return
@@ -51,7 +49,7 @@ def print_level_order_queue(root):
         if temp.right is not None:
             queue.append(temp.right)
 
-
+#############################################################################################################################
 if __name__ == '__main__':
     root = Node(1)
     root.left = Node(2)

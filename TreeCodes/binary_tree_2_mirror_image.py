@@ -20,7 +20,7 @@ def in_order_tree(root):
     in_order_tree(root.left)
     print(root.data, end=" ")
     in_order_tree(root.right)
-
+########################################################################################################################
 
 if __name__ == "__main__":
     root = Node(1)

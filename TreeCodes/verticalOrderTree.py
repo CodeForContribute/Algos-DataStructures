@@ -11,7 +11,7 @@ class Node:
         self.left = None
         self.right = None
 
-
+########################################################################################################################
 def find_min_max(node, minimum, maximum, hd):
     if node is None:
         return
@@ -40,6 +40,7 @@ def vertical_order(root):
         print_vertical_line(root, line_no, 0)
         print(" ")
 
+########################################################################################################################
 
 if __name__ == '__main__':
     root = Node(1)

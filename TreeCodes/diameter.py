@@ -4,7 +4,7 @@ class Node:
         self.left = None
         self.right = None
 
-
+########################################################################################################################
 class Tree:
     def height(self, root):
         if root is None:
@@ -27,6 +27,7 @@ class Tree:
         right_diameter = self.diameter(root.right)
         return max(left_height+right_height+1, max(left_diameter, right_diameter))
 
+#######################################################################################################################
 
 if __name__ == '__main__':
     tree = Tree()
