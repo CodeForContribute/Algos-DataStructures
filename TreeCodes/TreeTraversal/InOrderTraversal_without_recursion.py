@@ -21,7 +21,7 @@ def in_order_traversal_without_recusrion(root):
         else:
             break
 
-#######################################################################################################################
+###################################################################################################################
 def pre_order_traversal_without_recursion(root):
     if root is None:
         return
@@ -49,6 +49,6 @@ if __name__ == '__main__':
     root.right.right = Node(7)
     in_order_traversal_without_recusrion(root)
     print("\n")
-    pre_order_traversal_without_recursion(root)
-    print("\n")
+    # pre_order_traversal_without_recursion(root)
+    # print("\n")
     # post_order_traversal_without_recursion(root)

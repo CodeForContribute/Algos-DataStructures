@@ -51,6 +51,16 @@ def IterativePostOrderTraversal_1_Stack(root):
         if len(Stack) <= 0:
             break
 
+def postorderTraversal(self, A):
+    result = []
+    d = [A]
+    while d:
+        node = d.pop()
+        if node:
+            result.append(node.val)
+            d.append(node.left)
+            d.append(node.right)
+    return result[::-1]
 
 if __name__ == '__main__':
     root = Node(1)
