@@ -1,8 +1,21 @@
-## Using 2 loops ##########3
-def equilibrium(arr, n):
-    leftsum = 0
-    rightsum = 0
-    for i in range(n):
-        leftsum = 0
-        for j in range(i):
-            leftsum += arr[j]
+### Space Efficient ##############
+def Equilibrium(arr, n):
+    leftSum = 0
+    rightSum = 0
+    for i in range(1, n):
+        rightSum += arr[i]
+    i, j = 0, 1
+    while j < n:
+        rightSum -= arr[j]
+        leftSum += arr[i]
+        if leftSum == rightSum:
+            return arr[i + 1]
+        i += 1
+        j += 1
+
+
+if __name__ == '__main__':
+    arr = [2, 3, 4, 1, 4, 5]
+    n = len(arr)
+    print(Equilibrium(arr, n))
+
