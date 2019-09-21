@@ -4,55 +4,57 @@ class Node:
         self.left = None
         self.right = None
 
-############ Expected Time Complexity:O(n^2)
-############ Expected Space Complexity:O(log(n))
-
-def convertBSTDLL(root, head, tail):
-    if not root:
-        return
-    if root.left:
-        convertBSTDLL(root.left, head, tail)
-    root.left = tail
-    if tail:
-        tail.right = root
-    else:
-        head = root
-    tail = root
-    if root.right:
-        convertBSTDLL(root.right, head, tail)
-
-def ispresentInDLL(head, tail, sum):
-    while head != tail:
-        current = head.data + tail.data
-        if current == sum:
-            return True
-        elif current > sum:
-            tail = tail.left
-        else:
-            head = head.right
-    return False
-
-def findTripletAddto0(root):
-    if not root:
-        return False
-    head = None
-    tail = None
-    convertBSTDLL(root, head, tail)
-    while head.right != tail and head.data < 0:
-        if ispresentInDLL(head.right,tail, -1*head.data):
-            return True
-        else:
-            head = head.right
-    return False
 
 def insert(root, data):
     if not root:
         return Node(data)
     if data < root.data:
-        root.left = insert(root.left,data)
+        root.left = insert(root.left, data)
     if data > root.data:
         root.right = insert(root.right, data)
     return root
+
+############ Expected Time Complexity:O(n^2)
+############ Expected Space Complexity:O(log(n))
+def ConvertBSTDLL(root, head, tail):
+    if not root:
+        return
+    if root.left:
+        ConvertBSTDLL(root.left, head, tail)
+    root.left = tail[0]
+    if tail[0]:
+        tail[0].right = root
+    else:
+        head[0] = root
+    tail[0] = root
+    if root.right:
+        ConvertBSTDLL(root.right, head, tail)
+
+
+def isPresentInDLL(head, tail, Sum):
+    while head[0] != tail[0]:
+        current = head[0].data + tail[0].data
+        if current == Sum:
+            print(current, Sum)
+            return True
+        elif current > Sum:
+            tail[0] = tail[0].left
+        else:
+            head[0] = head[0].right
+    return False
+
+def findTripletAddto0(root):
+    if not root:
+        return False
+    head = [None]
+    tail = [None]
+    # Sum = 0
+    ConvertBSTDLL(root, head, tail)
+    while head[0].right != tail[0] and head[0].data < 0:
+        if isPresentInDLL(head, tail, -1 * head[0].data):
+            return True
+        else:
+            head[0] = head[0].right
 
 if __name__ == '__main__':
     root = None

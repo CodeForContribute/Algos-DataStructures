@@ -5,16 +5,16 @@ class Graph:
     def __init__(self):
         self.graph = defaultdict(list)
 
-    def add_edge(self, u, v):
+    def addEdge(self, u, v):
         self.graph[u].append(v)
 
-    # Method1: Using recursion
-    def DFS(self):
-        v = len(self.graph)
-        visited = [False]*v
-        for i in range(v):
-            if visited[i] is False:
-                self.DFSUtil(i, visited)
+    # Time Complexity : O(V+E) where V->number of vertcies & E-number of Edges
+    def DFS(self, v):
+        # pass
+        if v not in self.graph.keys():
+            return
+        visited = [False] * len(self.graph)
+        self.DFSUtil(v, visited)
 
     def DFSUtil(self, v, visited):
         visited[v] = True
@@ -23,22 +23,14 @@ class Graph:
             if visited[i] is False:
                 self.DFSUtil(i, visited)
 
-    def print_graph(self):
-        v = len(self.graph)
-        for i in range(v):
-            print("{}->{}".format(i, self.graph[i]))
-
 
 if __name__ == '__main__':
     g = Graph()
-    g.add_edge(0, 1)
-    g.add_edge(0, 2)
-    g.add_edge(1, 2)
-    g.add_edge(2, 0)
-    g.add_edge(2, 3)
-    g.add_edge(3, 3)
-    g.print_graph()
-    print("Following is Depth First Traversal:")
-    g.DFS()
-
-
+    g.addEdge(0, 1)
+    g.addEdge(0, 2)
+    g.addEdge(1, 3)
+    g.addEdge(2, 0)
+    g.addEdge(2, 3)
+    g.addEdge(3, 3)
+    print("Depth First Traversal")
+    g.DFS(0)
