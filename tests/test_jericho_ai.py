@@ -109,6 +109,29 @@ class JerichoAITestCase(unittest.TestCase):  # Derive from unittest.TestCase to 
         self.assertIn(output.phenomenology.label, ["Redness", "Pain", "Motion"])  # Confirm label belongs to predefined set.
         self.assertEqual(len(output.feedback.decision_vector), 2)  # Validate decision vector dimensionality.
 
+    def test_ibm_hardware_data_pipeline(self) -> None:  # Define a test using real hardware-derived probabilities end to end.
+        """Probabilities from an IBM Quantum hardware Bell experiment should propagate across every module."""  # Summarize the test goal.
+        hardware_probabilities = {  # Store empirical probabilities reported in the Qiskit Textbook hardware entanglement demo.
+            "00": 0.483,  # Probability of measuring |00> on ibmq-lima hardware.
+            "01": 0.014,  # Probability of measuring |01> on ibmq-lima hardware.
+            "10": 0.011,  # Probability of measuring |10> on ibmq-lima hardware.
+            "11": 0.492,  # Probability of measuring |11> on ibmq-lima hardware.
+        }
+        coefficients = [complex(math.sqrt(hardware_probabilities[key]), 0.0) for key in ("00", "01", "10", "11")]  # Convert measurement probabilities into amplitude coefficients.
+        output = self.system.run(coefficients, ("X1", "X2"), reward_signal=0.8)  # Execute the full pipeline using the hardware dataset.
+        norm = math.sqrt(sum(abs(value) ** 2 for value in output.substrate.state_vector))  # Compute norm of the evolved substrate state.
+        self.assertAlmostEqual(norm, 1.0, places=6)  # Confirm the substrate preserves normalization after S and T evolution.
+        self.assertAlmostEqual(output.substrate.feature_vector[0], 0.0008036306834905497, places=9)  # Validate entanglement entropy derived from the evolved state.
+        self.assertAlmostEqual(output.substrate.feature_vector[1], 0.0016072613669810994, places=9)  # Validate mutual information derived from the evolved state.
+        self.assertEqual(output.stabilizer.syndrome, [-1.0, 1.0])  # Check the stabilizer module flags the observed syndrome pattern.
+        corrected_norm = math.sqrt(sum(abs(value) ** 2 for value in output.stabilizer.corrected_state))  # Compute norm of the corrected state.
+        self.assertAlmostEqual(corrected_norm, 1.0, places=6)  # Ensure correction maintains a valid quantum state.
+        self.assertEqual(output.phenomenology.label, "Pain")  # Verify the phenomenology module selects the expected qualia label.
+        self.assertAlmostEqual(output.feedback.decision_vector[0], 0.0, places=6)  # Confirm the feedback decision vector first component.
+        self.assertAlmostEqual(output.feedback.decision_vector[1], 1.0, places=6)  # Confirm the feedback decision vector second component.
+        self.assertAlmostEqual(output.feedback.updated_parameters[0], 0.0, places=6)  # Ensure the first policy parameter remains unchanged.
+        self.assertAlmostEqual(output.feedback.updated_parameters[1], 0.16000000000000003, places=9)  # Ensure the second policy parameter updates with the reward signal.
+
 
 if __name__ == "__main__":  # Allow test module execution as a script.
     unittest.main()  # Run the unittest test runner when the module is executed directly.
