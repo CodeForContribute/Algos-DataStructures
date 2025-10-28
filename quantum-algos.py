@@ -18,7 +18,7 @@ EPSILON: float = 1e-9  # Small threshold used for floating point comparisons.
 def create_basis_state(num_qubits: int, index: int) -> Vector:
     """Create a computational basis state with a single amplitude set to one."""
     dimension: int = 2 ** num_qubits  # Determine how many amplitudes are needed.
-    state: Vector = [0j for _ in range(dimension)]  # Start with all-zero complex amplitudes.
+    state: Vector = [0j] * dimension  # Allocate the vector in one step for improved locality.
     state[index] = 1 + 0j  # Activate the requested basis state by setting its amplitude to one.
     return state  # Return the fully constructed state vector.
 
@@ -34,15 +34,11 @@ def hadamard() -> Matrix:
 
 def kronecker_product(a: Matrix, b: Matrix) -> Matrix:
     """Compute the Kronecker product between two matrices."""
-    result: Matrix = []  # Prepare a container for the expanded matrix.
-    for row_a in a:  # Iterate over each row of the first matrix.
-        for row_b in b:  # Iterate over each row of the second matrix.
-            new_row: List[complex] = []  # Assemble the resulting row entry by entry.
-            for value_a in row_a:  # Process each value from the current row of matrix A.
-                for value_b in row_b:  # Multiply with each value from the current row of matrix B.
-                    new_row.append(value_a * value_b)  # Append the product to build the Kronecker row.
-            result.append(new_row)  # Store the completed row.
-    return result  # Provide the Kronecker product matrix.
+    return [  # Build the result row by row using nested comprehensions to avoid append overhead.
+        [value_a * value_b for value_a in row_a for value_b in row_b]  # Multiply each pair of entries to form the block row.
+        for row_a in a  # Iterate over every row of the first matrix.
+        for row_b in b  # For each row in the second matrix, expand the block structure.
+    ]
 
 
 def tensor_power(matrix: Matrix, count: int) -> Matrix:
@@ -65,13 +61,10 @@ def hadamard_n(num_qubits: int) -> Matrix:
 
 def apply_gate(state: Vector, gate: Matrix) -> Vector:
     """Apply a gate matrix to a state vector using matrix-vector multiplication."""
-    new_state: Vector = []  # Prepare the container for the resulting state.
-    for row in gate:  # Iterate over each row of the gate matrix.
-        amplitude: complex = 0j  # Start the dot product at zero.
-        for value, basis_amplitude in zip(row, state):  # Pair each matrix entry with the state amplitude.
-            amplitude += value * basis_amplitude  # Accumulate the contribution to the new amplitude.
-        new_state.append(amplitude)  # Append the finished amplitude to the result vector.
-    return new_state  # Return the evolved quantum state.
+    return [  # Build the resulting vector using a comprehension for tighter loops.
+        sum(value * basis_amplitude for value, basis_amplitude in zip(row, state))  # Perform the dot product for each row.
+        for row in gate  # Iterate over every row of the gate matrix.
+    ]  # Return the evolved quantum state.
 
 
 def measure_probabilities(state: Vector) -> List[float]:
@@ -81,14 +74,10 @@ def measure_probabilities(state: Vector) -> List[float]:
 
 def identity_matrix(size: int) -> Matrix:
     """Create an identity matrix of arbitrary size."""
-    matrix: Matrix = []  # Prepare the outer list of rows.
-    for row_index in range(size):  # Iterate through each row index.
-        row: List[complex] = []  # Create a fresh row container.
-        for column_index in range(size):  # Iterate through each column index.
-            value: complex = (1 + 0j) if row_index == column_index else 0j  # Place ones on the diagonal and zeros elsewhere.
-            row.append(value)  # Store the computed value in the row.
-        matrix.append(row)  # Append the completed row to the matrix.
-    return matrix  # Return the identity matrix.
+    return [  # Construct the matrix using a nested comprehension to minimize Python overhead.
+        [1 + 0j if row_index == column_index else 0j for column_index in range(size)]  # Place ones on the diagonal.
+        for row_index in range(size)  # Iterate over every row index.
+    ]  # Return the identity matrix.
 
 
 def deutsch_jozsa(oracle: Matrix) -> bool:
@@ -141,24 +130,18 @@ def phase_oracle(num_qubits: int, marked_index: int) -> Matrix:
 
 def outer_product(vector: Vector) -> Matrix:
     """Compute the outer product |v⟩⟨v| for the provided vector."""
-    matrix: Matrix = []  # Prepare the resulting matrix.
-    for amplitude_row in vector:  # Iterate over each amplitude for the rows.
-        row: List[complex] = []  # Create the row container.
-        for amplitude_column in vector:  # Iterate over each amplitude for the columns.
-            row.append(amplitude_row * amplitude_column.conjugate())  # Multiply with the complex conjugate for Hermitian symmetry.
-        matrix.append(row)  # Append the completed row to the outer product matrix.
-    return matrix  # Return the projector matrix.
+    return [  # Build the matrix row by row using comprehensions for cache-friendly iteration.
+        [amplitude_row * amplitude_column.conjugate() for amplitude_column in vector]  # Multiply by the conjugate for Hermitian symmetry.
+        for amplitude_row in vector  # Iterate over every amplitude for the rows.
+    ]  # Return the projector matrix.
 
 
 def subtract_matrices(a: Matrix, b: Matrix) -> Matrix:
     """Subtract two matrices element-wise."""
-    result: Matrix = []  # Prepare a container for the difference.
-    for row_a, row_b in zip(a, b):  # Pair rows from both matrices.
-        row: List[complex] = []  # Create a row for the result.
-        for value_a, value_b in zip(row_a, row_b):  # Iterate over corresponding entries.
-            row.append(value_a - value_b)  # Subtract values component-wise.
-        result.append(row)  # Append the row to the result matrix.
-    return result  # Return the resulting matrix.
+    return [  # Construct the difference using comprehensions to reduce Python-level bookkeeping.
+        [value_a - value_b for value_a, value_b in zip(row_a, row_b)]  # Subtract the entries component-wise.
+        for row_a, row_b in zip(a, b)  # Pair up each row from both matrices.
+    ]  # Return the resulting matrix.
 
 
 def scale_matrix(matrix: Matrix, scalar: complex) -> Matrix:
@@ -171,41 +154,32 @@ def diffusion_operator(num_qubits: int) -> Matrix:
 
     Reference: https://qiskit.org/textbook/ch-algorithms/grover.html
     """
-    hadamard_full: Matrix = hadamard_n(num_qubits)  # Build the full Hadamard transform.
-    zero_state: Vector = create_basis_state(num_qubits, 0)  # Prepare the |0...0⟩ state vector.
-    projector: Matrix = outer_product(zero_state)  # Compute the projector onto |0...0⟩.
-    identity: Matrix = identity_matrix(len(projector))  # Build an identity matrix of matching size.
-    reflection: Matrix = subtract_matrices(scale_matrix(projector, 2 + 0j), identity)  # Compute 2|0⟩⟨0| - I.
-    temp: Matrix = matrix_multiply(hadamard_full, reflection)  # Multiply Hadamard by the reflection.
-    diffusion: Matrix = matrix_multiply(temp, hadamard_full)  # Apply the second Hadamard to complete the operator.
-    return diffusion  # Return the diffusion operator.
+    size: int = 2 ** num_qubits  # Determine the dimension of the search space.
+    uniform_weight: complex = (2 / size) + 0j  # Each entry in 2|s⟩⟨s| equals 2 divided by the number of states.
+    return [  # Build the diffusion matrix directly without intermediate multiplications.
+        [  # Construct each row explicitly.
+            (uniform_weight - 1 + 0j) if row_index == column_index else uniform_weight  # Diagonal entries subtract one, off-diagonals share the uniform weight.
+            for column_index in range(size)  # Iterate over every column index.
+        ]
+        for row_index in range(size)  # Iterate over every row index.
+    ]  # Return the diffusion operator.
 
 
 def matrix_multiply(a: Matrix, b: Matrix) -> Matrix:
     """Multiply two square matrices."""
-    result: Matrix = []  # Prepare the container for the product matrix.
-    size: int = len(a)  # Determine the dimension of the matrices.
-    for row_index in range(size):  # Iterate over each row index of the first matrix.
-        row: List[complex] = []  # Create a new row for the result.
-        for column_index in range(size):  # Iterate over each column index of the second matrix.
-            value: complex = 0j  # Initialize the accumulator for the dot product.
-            for k in range(size):  # Walk over the shared dimension.
-                value += a[row_index][k] * b[k][column_index]  # Accumulate the product of corresponding entries.
-            row.append(value)  # Store the finished entry in the row.
-        result.append(row)  # Append the row to the result matrix.
-    return result  # Return the matrix product.
+    columns_b: List[tuple[complex, ...]] = [tuple(column) for column in zip(*b)]  # Cache the columns of matrix B for reuse.
+    return [  # Build the resulting matrix row by row.
+        [sum(value_a * value_b for value_a, value_b in zip(row_a, column_b)) for column_b in columns_b]  # Compute each dot product using zipped pairs.
+        for row_a in a  # Iterate over every row of matrix A.
+    ]  # Return the matrix product.
 
 
 def transpose_conjugate(matrix: Matrix) -> Matrix:
     """Compute the conjugate transpose (Hermitian adjoint) of a matrix."""
-    size: int = len(matrix)  # Determine the dimension of the matrix.
-    result: Matrix = []  # Prepare the container for the transposed matrix.
-    for column_index in range(size):  # Iterate over each column index of the original matrix.
-        row: List[complex] = []  # Build a row for the conjugate transpose.
-        for row_index in range(size):  # Iterate over each row index of the original matrix.
-            row.append(matrix[row_index][column_index].conjugate())  # Take the complex conjugate while swapping indices.
-        result.append(row)  # Append the completed row to the result matrix.
-    return result  # Return the conjugate transpose.
+    return [  # Build the transposed matrix using zip for cache-friendly access.
+        [value.conjugate() for value in column]  # Take the complex conjugate while iterating over each column.
+        for column in zip(*matrix)  # Transpose by zipping the rows of the original matrix.
+    ]  # Return the conjugate transpose.
 
 
 def grover_iteration(num_qubits: int, oracle: Matrix, iterations: int) -> Vector:
@@ -226,13 +200,7 @@ def grover_iteration(num_qubits: int, oracle: Matrix, iterations: int) -> Vector
 def most_probable_state(state: Vector) -> int:
     """Identify the basis index with the highest measurement probability."""
     probabilities: List[float] = measure_probabilities(state)  # Compute measurement probabilities.
-    best_index: int = 0  # Track the current best index.
-    best_probability: float = -1.0  # Track the highest probability encountered so far.
-    for index, probability in enumerate(probabilities):  # Iterate through all probabilities.
-        if probability > best_probability:  # Check whether the current probability is larger than the best.
-            best_probability = probability  # Update the best probability.
-            best_index = index  # Update the best index to the current position.
-    return best_index  # Return the index associated with the highest probability.
+    return max(range(len(probabilities)), key=probabilities.__getitem__)  # Let Python's optimized max locate the best index.
 
 
 def run_grover(num_qubits: int, marked_index: int) -> int:
