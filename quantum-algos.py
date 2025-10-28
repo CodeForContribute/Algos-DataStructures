@@ -105,7 +105,7 @@ def balanced_oracle() -> Matrix:
     oracle[2][2] = 0j  # Clear the entry for |10⟩ to prepare for the target flip.
     oracle[3][3] = 0j  # Clear the entry for |11⟩ for the same reason.
     oracle[2][3] = 1 + 0j  # Map |10⟩ to |11⟩ by flipping the second qubit.
-    oracle[3][2] = 1 + 0j  # Map |11⟩ to |10⟩, completing the controlled-NOT behaviour.
+    oracle[3][2] = 1 + 0j  # Map |11⟩ to |10⟩, completing the controlled-NOT behavior.
     return oracle  # Return the completed balanced oracle.
 
 
