@@ -92,7 +92,10 @@ def identity_matrix(size: int) -> Matrix:
 
 
 def deutsch_jozsa(oracle: Matrix) -> bool:
-    """Run the Deutsch-Jozsa algorithm and decide whether the oracle is constant."""
+    """Run the Deutsch-Jozsa algorithm and decide whether the oracle is constant.
+
+    Reference: https://qiskit.org/textbook/ch-algorithms/deutsch-jozsa.html
+    """
     state: Vector = create_basis_state(2, 1)  # Prepare the |0⟩|1⟩ input state.
     hadamard_two: Matrix = kronecker_product(hadamard(), hadamard())  # Build the two-qubit Hadamard transform.
     state = apply_gate(state, hadamard_two)  # Apply Hadamards to create a superposition on both qubits.
@@ -105,7 +108,10 @@ def deutsch_jozsa(oracle: Matrix) -> bool:
 
 
 def balanced_oracle() -> Matrix:
-    """Construct an oracle for the balanced function f(x) = x."""
+    """Construct an oracle for the balanced function f(x) = x.
+
+    Reference: https://qiskit.org/textbook/ch-algorithms/deutsch-jozsa.html
+    """
     oracle: Matrix = identity_matrix(4)  # Start from the 4x4 identity matrix.
     oracle[2][2] = 0j  # Clear the entry for |10⟩ to prepare for the target flip.
     oracle[3][3] = 0j  # Clear the entry for |11⟩ for the same reason.
@@ -115,12 +121,18 @@ def balanced_oracle() -> Matrix:
 
 
 def constant_oracle() -> Matrix:
-    """Construct an oracle representing the constant zero function."""
+    """Construct an oracle representing the constant zero function.
+
+    Reference: https://qiskit.org/textbook/ch-algorithms/deutsch-jozsa.html
+    """
     return identity_matrix(4)  # The identity matrix leaves the target qubit unchanged.
 
 
 def phase_oracle(num_qubits: int, marked_index: int) -> Matrix:
-    """Create a phase oracle that negates the amplitude of the marked basis state."""
+    """Create a phase oracle that negates the amplitude of the marked basis state.
+
+    Reference: https://qiskit.org/textbook/ch-algorithms/grover.html
+    """
     size: int = 2 ** num_qubits  # Determine the dimension of the search space.
     oracle: Matrix = identity_matrix(size)  # Start with the identity operator.
     oracle[marked_index][marked_index] = -1 + 0j  # Place a -1 on the marked state's diagonal entry.
@@ -155,7 +167,10 @@ def scale_matrix(matrix: Matrix, scalar: complex) -> Matrix:
 
 
 def diffusion_operator(num_qubits: int) -> Matrix:
-    """Construct Grover's diffusion operator for the given number of qubits."""
+    """Construct Grover's diffusion operator for the given number of qubits.
+
+    Reference: https://qiskit.org/textbook/ch-algorithms/grover.html
+    """
     hadamard_full: Matrix = hadamard_n(num_qubits)  # Build the full Hadamard transform.
     zero_state: Vector = create_basis_state(num_qubits, 0)  # Prepare the |0...0⟩ state vector.
     projector: Matrix = outer_product(zero_state)  # Compute the projector onto |0...0⟩.
@@ -194,7 +209,10 @@ def transpose_conjugate(matrix: Matrix) -> Matrix:
 
 
 def grover_iteration(num_qubits: int, oracle: Matrix, iterations: int) -> Vector:
-    """Run Grover's search algorithm for a fixed number of iterations."""
+    """Run Grover's search algorithm for a fixed number of iterations.
+
+    Reference: https://qiskit.org/textbook/ch-algorithms/grover.html
+    """
     state: Vector = create_basis_state(num_qubits, 0)  # Begin with the |0...0⟩ state.
     hadamard_full: Matrix = hadamard_n(num_qubits)  # Build the full Hadamard transform.
     state = apply_gate(state, hadamard_full)  # Place the state into an equal superposition.
@@ -218,7 +236,10 @@ def most_probable_state(state: Vector) -> int:
 
 
 def run_grover(num_qubits: int, marked_index: int) -> int:
-    """Execute Grover's algorithm with the recommended number of iterations."""
+    """Execute Grover's algorithm with the recommended number of iterations.
+
+    Reference: https://qiskit.org/textbook/ch-algorithms/grover.html
+    """
     size: int = 2 ** num_qubits  # Determine how many elements are being searched.
     iterations: int = max(1, int(math.floor((math.pi / 4) * math.sqrt(size))))  # Use the standard floor-based heuristic.
     oracle: Matrix = phase_oracle(num_qubits, marked_index)  # Build the oracle that marks the desired state.
